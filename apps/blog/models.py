@@ -17,4 +17,9 @@ class Blog(models.Model):
     enabled = models.BooleanField()
 
     def __str__(self):
-    	return f'{self.title} - {self.enabled}'
+        return f'{self.title} - {self.enabled}'
+
+
+class Comment(models.Model):
+    text = models.CharField(max_length=256)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
