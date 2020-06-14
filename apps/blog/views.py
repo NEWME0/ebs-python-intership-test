@@ -48,8 +48,12 @@ class BlogItemView(GenericAPIView):
 
     def get(self, request, pk):
         blog = get_object_or_404(Blog.objects.filter(pk=pk))
+        comments = Comment.objects.filter(blog=pk)
 
-        return Response(BlogSerializer(blog).data)
+        return Response({
+            'blog': BlogSerializer(blog).data,
+            'comments': CommentSerializer(comments, many=True).data
+        })
 
 
 class CommentView(GenericAPIView):
