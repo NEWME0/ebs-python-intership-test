@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from drf_util.decorators import serialize_decorator
 
-from apps.blog.models import Category, Blog
-from apps.blog.serializers import CategorySerializer, BlogSerializer
+from apps.blog.models import Category, Blog, Comment
+from apps.blog.serializers import CategorySerializer, BlogSerializer, CommentSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -50,3 +50,22 @@ class BlogItemView(GenericAPIView):
         blog = get_object_or_404(Blog.objects.filter(pk=pk))
 
         return Response(BlogSerializer(blog).data)
+
+
+class CommentView(GenericAPIView):
+    serializer_class = CommentSerializer
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    @serialize_decorator(CommentSerializer)
+    def post(self, request):
+        validated_data = request.serializer.validated_data
+
+        comment = Comment.objects.create(
+            text=validated_data['text'],
+            blog=validated_data['blog'],
+        )
+        comment.save()
+
+        return Response(CommentSerializer(comment).data)
